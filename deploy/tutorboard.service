@@ -1,0 +1,25 @@
+# systemd service for the Linux VM (IaaS). Keeps the app running and restarts it on reboot.
+# Install on the VM:
+#   sudo cp deploy/tutorboard.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now tutorboard
+# View logs:
+#   sudo journalctl -u tutorboard -f
+#
+# Replace YOUR_USER with your VM username (run `whoami` on the VM).
+
+[Unit]
+Description=Tutoring Appointment Board (Flask)
+After=network.target
+
+[Service]
+User=YOUR_USER
+WorkingDirectory=/home/YOUR_USER/tutorboard
+Environment="APP_ENV=Linux VM (Compute Engine)"
+Environment=USE_FIRESTORE=true
+Environment=SECRET_KEY=change-this-to-a-random-string
+ExecStart=/home/YOUR_USER/tutorboard/venv/bin/gunicorn --bind 0.0.0.0:8080 --workers 2 main:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

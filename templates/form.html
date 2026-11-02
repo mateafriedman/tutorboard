@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ "Add a session" if mode == "add" else "Edit session" }}</h1>
+
+<form class="form" method="post"
+      action="{{ url_for('add') if mode == 'add' else url_for('edit', item_id=session.id) }}">
+  <label>Subject *
+    <input name="subject" value="{{ session.subject or '' }}" placeholder="Statistics">
+  </label>
+  <label>Course code
+    <input name="course_code" value="{{ session.course_code or '' }}" placeholder="BTE 210">
+  </label>
+  <label>Tutor name *
+    <input name="tutor_name" value="{{ session.tutor_name or '' }}">
+  </label>
+  <label>Student name
+    <input name="student_name" value="{{ session.student_name or '' }}" placeholder="Leave blank if open">
+  </label>
+  <div class="row">
+    <label>Date *
+      <input type="date" name="date" value="{{ session.date or '' }}">
+    </label>
+    <label>Time *
+      <input type="time" name="time" value="{{ session.time or '' }}">
+    </label>
+  </div>
+  <label>Location *
+    <input name="location" value="{{ session.location or '' }}" placeholder="Richter Library, Room 2 or Zoom">
+  </label>
+  <label>Status
+    <select name="status">
+      {% for st in statuses %}
+        <option value="{{ st }}" {% if st == session.status %}selected{% endif %}>{{ st }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Notes
+    <textarea name="notes" rows="3">{{ session.notes or '' }}</textarea>
+  </label>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">{{ "Add session" if mode == "add" else "Save changes" }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('index') }}">Cancel</a>
+  </div>
+  <p class="muted">* Required</p>
+</form>
+{% endblock %}

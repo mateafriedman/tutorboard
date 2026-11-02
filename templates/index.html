@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tutoring Sessions</h1>
+
+<form class="search" method="get" action="{{ url_for('index') }}">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search subject, course, tutor, location">
+  <select name="status">
+    <option value="">All statuses</option>
+    {% for s in statuses %}
+      <option value="{{ s }}" {% if s == status %}selected{% endif %}>{{ s }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn" type="submit">Search</button>
+  {% if q or status %}<a class="btn btn-ghost" href="{{ url_for('index') }}">Clear</a>{% endif %}
+</form>
+
+<p class="count">{{ sessions|length }} session{{ '' if sessions|length == 1 else 's' }}</p>
+
+<div class="grid">
+  {% for s in sessions %}
+  <article class="card">
+    <div class="card-head">
+      <div>
+        <h2>{{ s.subject }}</h2>
+        <span class="muted">{{ s.course_code }}</span>
+      </div>
+      <span class="badge badge-{{ s.status|lower }}">{{ s.status }}</span>
+    </div>
+    <dl>
+      <dt>Tutor</dt><dd>{{ s.tutor_name }}</dd>
+      <dt>Student</dt><dd>{{ s.student_name or "Not booked yet" }}</dd>
+      <dt>When</dt><dd>{{ s.date }} at {{ s.time }}</dd>
+      <dt>Where</dt><dd>{{ s.location }}</dd>
+      {% if s.notes %}<dt>Notes</dt><dd>{{ s.notes }}</dd>{% endif %}
+    </dl>
+    <div class="card-actions">
+      <form method="post" action="{{ url_for('change_status', item_id=s.id) }}" class="status-form">
+        <select name="status" aria-label="Change status">
+          {% for st in statuses %}
+            <option value="{{ st }}" {% if st == s.status %}selected{% endif %}>{{ st }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-small" type="submit">Update</button>
+      </form>
+      <a class="btn btn-small btn-ghost" href="{{ url_for('edit', item_id=s.id) }}">Edit</a>
+    </div>
+  </article>
+  {% else %}
+  <p class="muted">No sessions match your search.</p>
+  {% endfor %}
+</div>
+{% endblock %}
